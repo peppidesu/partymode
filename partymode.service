@@ -1,0 +1,12 @@
+[Unit]
+After=dbus-broker.service
+Description="partymode - Keep your system awake while playing media"
+Documentation="https://github.com/peppidesu/partymode"
+
+[Service]
+Type=simple
+ExecStart=/home/peppidesu/dev/partymode/target/release/partymode
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

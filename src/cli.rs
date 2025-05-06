@@ -1,10 +1,7 @@
 use clap::{Command, arg};
 use std::path::PathBuf;
 
-use crate::{
-    PARTYMODE_RUNTIME_DIR, SOCKET_PATH, default_config_path,
-    socket::{self, Request, Response},
-};
+use crate::{dbus, default_config_path};
 
 /// Command line arguments for partymode.
 pub struct Args {
@@ -101,26 +98,7 @@ pub fn parse() -> Args {
     return args;
 }
 
-async fn fetch(request: Request) -> Result<Response, String> {
-    let mut client = socket::Client::connect()
-        .await
-        .map_err(|e| format!("Could not connect to daemon: {:?}", e))?;
-
-    client
-        .send(request)
-        .await
-        .map_err(|_| "Failed to send request to daemon".to_string())?;
-
-    let response: Response = client
-        .recv()
-        .await
-        .map_err(|_| "Received invalid response from daemon.".to_string())?;
-
-    Ok(response)
-}
-
 pub async fn run(args: Args) -> Result<(), String> {
-    std::fs::create_dir_all(&*PARTYMODE_RUNTIME_DIR).unwrap();
     match args.cmd {
         Cmd::Daemon => {
             // Start the daemon
@@ -130,61 +108,71 @@ pub async fn run(args: Args) -> Result<(), String> {
                 .map_err(|e| format!("Failed to start daemon: {}", e))
         }
         Cmd::On => {
-            let response = fetch(Request::Set { enabled: true }).await?;
-            match response {
-                Response::Ok => {}
-                Response::Error { message } => {
-                    return Err(format!("Error toggling party mode: {}", message));
-                }
-                _ => {
-                    return Err("Error toggling party mode: Unexpected response".to_string());
-                }
-            }
-            Ok(())
+            let connection = zbus::Connection::session()
+                .await
+                .map_err(|e| format!("Failed to connect to D-Bus: {}", e))?;
+
+            let proxy = dbus::partymode::PartymodeProxy::new(&connection)
+                .await
+                .map_err(|e| format!("Failed to connect to daemon: {}", e))?;
+
+            proxy
+                .set(true)
+                .await
+                .map_err(|e| format!("Could not enable partymode: {}", e))
         }
         Cmd::Off => {
-            let response = fetch(Request::Set { enabled: false }).await?;
-            match response {
-                Response::Ok => {}
-                Response::Error { message } => {
-                    return Err(format!("Error toggling party mode: {}", message));
-                }
-                _ => {
-                    return Err("Error toggling party mode: Unexpected response".to_string());
-                }
-            }
-            Ok(())
+            let connection = zbus::Connection::session()
+                .await
+                .map_err(|e| format!("Failed to connect to D-Bus: {}", e))?;
+
+            let proxy = dbus::partymode::PartymodeProxy::new(&connection)
+                .await
+                .map_err(|e| format!("Failed to connect to daemon: {}", e))?;
+
+            proxy
+                .set(false)
+                .await
+                .map_err(|e| format!("Could not enable partymode: {}", e))
         }
         Cmd::Toggle => {
-            let response = fetch(Request::Toggle).await?;
-            match response {
-                Response::Ok => {}
-                Response::Error { message } => {
-                    return Err(format!("Error toggling party mode: {}", message));
-                }
-                _ => {
-                    return Err("Error toggling party mode: Unexpected response".to_string());
-                }
-            }
-            Ok(())
+            let connection = zbus::Connection::session()
+                .await
+                .map_err(|e| format!("Failed to connect to D-Bus: {}", e))?;
+
+            let proxy = dbus::partymode::PartymodeProxy::new(&connection)
+                .await
+                .map_err(|e| format!("Failed to connect to daemon: {}", e))?;
+
+            proxy
+                .toggle()
+                .await
+                .map_err(|e| format!("Could not enable partymode: {}", e))
         }
         Cmd::Status => {
-            let response = fetch(Request::Status).await?;
-            match response {
-                Response::Status { enabled } => {
-                    println!(
-                        "Party mode is {}",
-                        if enabled { "enabled" } else { "disabled" }
-                    );
-                    Ok(())
+            let connection = zbus::Connection::session()
+                .await
+                .map_err(|e| format!("Failed to connect to D-Bus: {}", e))?;
+
+            let proxy = dbus::partymode::PartymodeProxy::new(&connection)
+                .await
+                .map_err(|e| format!("Failed to connect to daemon: {}", e))?;
+
+            let status = proxy
+                .status()
+                .await
+                .map_err(|e| format!("Failed to connect to daemon: {}", e))?;
+
+            println!(
+                "{}",
+                if status.partymode {
+                    "enabled"
+                } else {
+                    "disabled"
                 }
-                Response::Error { message } => {
-                    return Err(format!("Error getting status: {}", message));
-                }
-                _ => {
-                    return Err("Error getting status: Unexpected response".to_string());
-                }
-            }
+            );
+
+            Ok(())
         }
     }
 }

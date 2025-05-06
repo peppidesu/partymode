@@ -1,11 +1,10 @@
 mod cli;
 mod config;
 mod daemon;
-mod socket;
+mod dbus;
 mod state;
 
 use std::path::PathBuf;
-use std::sync::LazyLock;
 
 pub use cli::Args;
 pub use cli::parse;
@@ -31,16 +30,3 @@ pub fn default_config_path() -> PathBuf {
 
     path
 }
-
-static XDG_RUNTIME_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-    std::env::var("XDG_RUNTIME_DIR")
-        .map(|s| PathBuf::from(s))
-        .unwrap_or_else(|_| PathBuf::from("/tmp"))
-});
-
-static PARTYMODE_RUNTIME_DIR: LazyLock<PathBuf> =
-    LazyLock::new(|| XDG_RUNTIME_DIR.join("partymode"));
-
-static SOCKET_PATH: LazyLock<PathBuf> = LazyLock::new(|| PARTYMODE_RUNTIME_DIR.join("sock"));
-
-static PID_LOCK_PATH: LazyLock<PathBuf> = LazyLock::new(|| PARTYMODE_RUNTIME_DIR.join("pid.lock"));
