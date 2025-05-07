@@ -99,7 +99,7 @@ playerctl -l
 If parts of a rule are omitted or no matching rule is found, `partymode` resorts to using the default rule (`["*"]`).
 
 ## FAQ
-### Wait, isn't this just what <other project> does?
+### Wait, isn't this just what `<other project>` does?
 `partymode` is different from most inhibit tools like `caffeine-ng` or the built-in KDE menu, because they don't automatically inhibit when media is playing. These tools aim to solve a different problem.
 
 To give an example, `partymode` will allow you to inhibit suspend while listening to music, regardless of whether that window is fullscreen or not. When you stop playback, `partymode` will also stop inhibiting.
