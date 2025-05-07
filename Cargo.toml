@@ -4,6 +4,11 @@ version = "0.2.0"
 edition = "2024"
 description = "Keeps your system awake while playing media"
 license = "AGPL-3.0"
+repository = "https://github.com/peppidesu/partymode"
+authors = ["Pepijn Bakker"]
+keywords = ["idle", "inhibit", "media", "mpd", "suspend", "mpris"]
+categories = ["command-line-utilities"]
+
 [dependencies]
 clap = { version = "4.5.37", default-features = false, features = [
     "std",
