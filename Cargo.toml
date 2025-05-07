@@ -6,7 +6,7 @@ description = "Keeps your system awake while playing media"
 license = "AGPL-3.0"
 repository = "https://github.com/peppidesu/partymode"
 authors = ["Pepijn Bakker"]
-keywords = ["idle", "inhibit", "media", "mpd", "suspend", "mpris"]
+keywords = ["idle", "inhibit", "media", "mpd", "suspend"]
 categories = ["command-line-utilities"]
 
 [dependencies]
