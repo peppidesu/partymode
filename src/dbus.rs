@@ -51,6 +51,7 @@ pub mod mpris {
     }
 
     impl Player<'_> {
+        #[allow(dead_code)]
         pub async fn identity(&self) -> Result<String> {
             self.iface_base.identity().await
         }
