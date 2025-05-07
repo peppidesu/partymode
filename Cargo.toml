@@ -2,7 +2,8 @@
 name = "partymode"
 version = "0.2.0"
 edition = "2024"
-
+description = "Keeps your system awake while playing media"
+license = "AGPL-3.0"
 [dependencies]
 clap = { version = "4.5.37", default-features = false, features = [
     "std",
