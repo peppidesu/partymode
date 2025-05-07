@@ -11,6 +11,7 @@ use zbus::{
     default_service = "org.freedesktop.DBus",
     default_path = "/"
 )]
+
 pub trait DBus {
     fn list_names(&self) -> Result<Vec<String>>;
 }

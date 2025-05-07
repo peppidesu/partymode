@@ -10,12 +10,7 @@ keywords = ["idle", "inhibit", "media", "mpd", "suspend"]
 categories = ["command-line-utilities"]
 
 [dependencies]
-clap = { version = "4.5.37", default-features = false, features = [
-    "std",
-    "cargo",
-    "help",
-    "usage",
-] }
+clap = { version = "4.5.37", features = ["cargo"] }
 itertools = "0.14.0"
 serde = { version = "1.0.219", features = ["derive"] }
 signal-hook = "0.3.17"
