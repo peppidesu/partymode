@@ -36,17 +36,12 @@ Inhibit behavior rule applied to one or all players.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Rule {
     /// Apply regardless of whether partymode is currently on or off.
-    #[serde(default = "rule_defaults::always")]
+    #[serde(default)]
     pub always: bool,
     /// Inhibit mode to use.
     pub mode: Option<InhibitMode>,
     /// What to inhibit.
     pub targets: Vec<InhibitTarget>,
-}
-mod rule_defaults {
-    pub fn always() -> bool {
-        true
-    }
 }
 
 impl Rule {
